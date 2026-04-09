@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Link, Navigate, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useFirst90DaysStream } from '../hooks/useFirst90DaysStream';
 import ResearchContextSection from '../components/first90days/ResearchContextSection';
@@ -8,7 +8,31 @@ import FitTagsSection from '../components/first90days/FitTagsSection';
 
 const First90DaysPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const state = location.state || null;
+
+  // Navigate home and scroll the contact section into view once it mounts.
+  // React Router's Link to "/#contact" doesn't auto-scroll to hashes, so we
+  // handle it explicitly here.
+  const handleGoToContact = (e) => {
+    e.preventDefault();
+    navigate('/');
+    // Wait a tick for the home route to render, then scroll.
+    requestAnimationFrame(() => {
+      const el = document.getElementById('contact');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        // Fallback if the section hasn't mounted yet — try once more.
+        setTimeout(() => {
+          document.getElementById('contact')?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          });
+        }, 100);
+      }
+    });
+  };
 
   // Always call the hook (rules of hooks). When state is missing, the hook
   // sees undefined inputs and stays idle, then we redirect below.
@@ -28,6 +52,11 @@ const First90DaysPage = () => {
       document.title = 'Rohit Biswas';
     };
   }, [state]);
+
+  // Always land at the top of the subpage so the result flows top→bottom as it streams.
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, []);
 
   if (!state) {
     return <Navigate to="/#first-90-days-form" replace />;
@@ -74,7 +103,7 @@ const First90DaysPage = () => {
             <span className="text-gradient-cyber">{company}</span>
           </h1>
           <p className="text-lg text-white/50">
-            A personalized onboarding plan grounded in my actual skills, projects, and experience.
+            Here's how I'd ship in my first 90 days at {company}.
           </p>
 
           {/* Status pill */}
@@ -142,10 +171,10 @@ const First90DaysPage = () => {
             <Link to="/#first-90-days-form" className="btn-ghost-dark">
               ← Generate another
             </Link>
-            <Link to="/#contact" className="btn-glow">
+            <a href="/#contact" onClick={handleGoToContact} className="btn-glow">
               <span aria-hidden="true">$</span>
               <span>Get in touch</span>
-            </Link>
+            </a>
           </div>
         </div>
       </section>

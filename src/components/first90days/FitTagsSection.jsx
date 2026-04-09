@@ -17,31 +17,20 @@ const STRENGTH_STYLES = {
     text: '#38bdf8',
     glow: 'rgba(56,189,248,0.18)',
   },
-  partial: {
-    label: 'partial match',
-    bg: 'rgba(245,158,11,0.10)',
-    border: 'rgba(245,158,11,0.40)',
-    text: '#f59e0b',
-    glow: 'rgba(245,158,11,0.18)',
-  },
-  growth: {
-    label: 'growth area',
-    bg: 'rgba(217,70,239,0.10)',
-    border: 'rgba(217,70,239,0.40)',
-    text: '#d946ef',
-    glow: 'rgba(217,70,239,0.18)',
-  },
 };
+
+// Coerce any legacy strength value into one of the two supported styles so the
+// UI never shows a weakness color even if the model regresses.
+const normalizeStrength = (s) => (s === 'strong' ? 'strong' : 'good');
 
 const GROUPS = [
   { key: 'technical_skills', title: 'Technical Skills' },
-  { key: 'education', title: 'Education' },
   { key: 'experience', title: 'Experience' },
-  { key: 'growth_areas', title: 'Growth Areas' },
+  { key: 'education', title: 'Education' },
 ];
 
 const Tag = ({ name, strength, index }) => {
-  const style = STRENGTH_STYLES[strength] || STRENGTH_STYLES.good;
+  const style = STRENGTH_STYLES[normalizeStrength(strength)];
   return (
     <motion.span
       className="inline-flex items-center gap-2 font-mono text-sm px-3 py-1.5 rounded-md cursor-default"
@@ -64,21 +53,6 @@ const Tag = ({ name, strength, index }) => {
   );
 };
 
-const Legend = () => (
-  <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
-    {Object.entries(STRENGTH_STYLES).map(([key, style]) => (
-      <span
-        key={key}
-        className="inline-flex items-center gap-2 font-mono text-xs"
-        style={{ color: style.text }}
-      >
-        <span className="w-2 h-2 rounded-full" style={{ background: style.text }} />
-        {style.label}
-      </span>
-    ))}
-  </div>
-);
-
 const FitTagsSection = ({ fit, isStreaming, fitStreaming }) => {
   // While we're still waiting for the FIT block, render skeletons.
   const showSkeletons = !fit;
@@ -86,22 +60,20 @@ const FitTagsSection = ({ fit, isStreaming, fitStreaming }) => {
   return (
     <section className="section-container">
       <SectionHeader
-        title="Job Requirements Fit"
-        subtitle="How my background lines up against the role"
+        title="Why I Fit the Role"
+        subtitle="The match, at a glance"
         index="03 · fit"
       />
 
-      <div className="max-w-4xl mx-auto">
-        <Legend />
-
+      <div className="max-w-5xl mx-auto">
         {showSkeletons ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {GROUPS.map((group, i) => (
               <SkeletonCard key={group.key} label={group.title} lines={3 + (i % 2)} />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {GROUPS.map((group, gi) => {
               const items = Array.isArray(fit[group.key]) ? fit[group.key] : [];
               return (

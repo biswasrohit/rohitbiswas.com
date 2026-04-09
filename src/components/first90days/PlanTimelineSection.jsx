@@ -20,9 +20,16 @@ const splitIntoPhases = (markdown) => {
     .map((segment) => {
       const match = segment.match(/^###\s+(.+?)\n([\s\S]*)/);
       if (!match) return null;
+      const rawBody = match[2].trim();
+      const headlineMatch = rawBody.match(/^\*\*Headline:\*\*\s*(.+?)(?:\n|$)/i);
+      const headline = headlineMatch ? headlineMatch[1].trim() : '';
+      const body = headlineMatch
+        ? rawBody.slice(headlineMatch[0].length).trim()
+        : rawBody;
       return {
         heading: match[1].trim(),
-        body: match[2].trim(),
+        headline,
+        body,
       };
     })
     .filter(Boolean);
@@ -36,7 +43,7 @@ const PlanTimelineSection = ({ markdown, isStreaming }) => {
     <section className="section-container">
       <SectionHeader
         title="First 90 Days Plan"
-        subtitle="A phased onboarding plan grounded in my actual experience"
+        subtitle="Three phases. Three outcomes."
         index="02 · plan"
       />
 
@@ -118,11 +125,22 @@ const PlanTimelineSection = ({ markdown, isStreaming }) => {
                         {phase.subtitle}
                       </p>
                     </div>
-                    <div className="dark-panel p-6 hover:border-white/15 transition-colors duration-300">
+                    {matched?.headline && (
+                      <p
+                        className="text-lg md:text-xl font-semibold text-white mb-3 leading-snug"
+                        style={{
+                          fontFamily: "'Syne', system-ui, sans-serif",
+                          letterSpacing: '-0.015em',
+                        }}
+                      >
+                        {matched.headline}
+                      </p>
+                    )}
+                    <div className="dark-panel p-5 hover:border-white/15 transition-colors duration-300">
                       {matched ? (
                         <MarkdownBlock>{matched.body}</MarkdownBlock>
                       ) : (
-                        <SkeletonCard lines={5} className="!p-0 !bg-transparent !border-0" />
+                        <SkeletonCard lines={4} className="!p-0 !bg-transparent !border-0" />
                       )}
                     </div>
                   </motion.div>

@@ -4,11 +4,13 @@ import MarkdownBlock from './MarkdownBlock';
 import SkeletonCard from './SkeletonCard';
 
 const PLACEHOLDER_LABELS = [
-  'company background',
-  'key challenges',
-  'tech stack overlap',
-  'my relevance',
+  'company',
+  'problems i can help with',
+  'stack overlap',
+  "why i'm a fit",
 ];
+
+const isFitCard = (title) => /why i'?m a fit/i.test(title);
 
 /**
  * Splits a markdown chunk into subsections by '### ' headers and returns
@@ -38,19 +40,27 @@ const ResearchContextSection = ({ markdown, isStreaming }) => {
     <section className="section-container">
       <SectionHeader
         title="Research & Context"
-        subtitle="What I'd want to know about your team before day one"
+        subtitle="The shortlist version"
         index="01 · research"
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-5xl mx-auto">
         {showSkeletons
           ? PLACEHOLDER_LABELS.map((label, i) => (
-              <SkeletonCard key={label} label={label} lines={4 + (i % 2)} />
+              <SkeletonCard key={label} label={label} lines={3 + (i % 2)} />
             ))
           : cards.map((card, i) => (
               <motion.div
                 key={card.title}
-                className="dark-panel p-6 hover:border-[#38bdf8]/20 transition-colors duration-300"
+                className="dark-panel p-5 hover:border-[#38bdf8]/20 transition-colors duration-300"
+                style={
+                  isFitCard(card.title)
+                    ? {
+                        borderColor: 'rgba(56,189,248,0.35)',
+                        boxShadow: '0 0 32px rgba(56,189,248,0.10)',
+                      }
+                    : undefined
+                }
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: i * 0.05 }}
