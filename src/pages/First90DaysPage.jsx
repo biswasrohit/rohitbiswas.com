@@ -17,7 +17,6 @@ const First90DaysPage = () => {
     plan,
     fit,
     fitStreaming,
-    status,
     error,
     isStreaming,
     isError,
