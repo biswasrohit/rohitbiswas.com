@@ -8,10 +8,14 @@ pnpm-debug.log*
 lerna-debug.log*
 
 .env
+.env.local
 node_modules
 dist
 dist-ssr
 *.local
+
+# Netlify
+.netlify
 
 # Editor directories and files
 .vscode/*
