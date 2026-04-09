@@ -1,6 +1,7 @@
 import NavBar from './components/NavBar';
 import Hero from './components/sections/Hero';
 import About from './components/sections/About';
+import First90DaysForm from './components/sections/First90DaysForm';
 import Skills from './components/sections/Skills';
 import Experience from './components/sections/Experience';
 import Education from './components/sections/Education';
@@ -15,6 +16,7 @@ function App() {
       <main>
         <Hero />
         <About />
+        <First90DaysForm />
         <Skills />
         <Experience />
         <Education />
